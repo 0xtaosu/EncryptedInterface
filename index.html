@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>加密</title>
+</head>
+<body>
+<form>
+    <p>请求地址</p>
+    <input type="text" id="url" placeholder="输入url"><br>
+    <p>请求头</p>
+    <input type="text" id="token" placeholder="输入用户token,如果有"><br>
+    <p>请求体</p>
+    <input type="text" id="content" placeholder="输入content,如果有"><br>
+    <input type="button" id="ok" value="POST">
+</form>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/aes.js"></script>
+<script>
+    //aes加密
+    var aesEncrypt = function (text, key) {
+        return CryptoJS.AES.encrypt(text, key).toString();
+    }
+</script>
+<script src="js/jsencrypt.min.js"></script>
+<script>
+    //rsa加密
+    var rsaEncrypt = function (text) {
+        var encrypt = new JSEncrypt();
+        encrypt.setPublicKey(PUBLIC);
+        return encrypt.encrypt(text);
+    }
+</script>
+<script>
+    var PUBLIC = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCyDMo0C8UDs18zpkXQ61uQkQhEXW4R3qZJ7TDI4aU3uPH8UeIuuVSj3gffTgNYFeiJD9Dwo15em+NPJMMg+Lz0E4ZCPNQ2Jc+hx1fzvK/A1inSJt5i6LZP2Z5TCpV0CnobM4SL+XerFQYj4j0hFk4l/MB8xMp6zRpjfBOzszKpkQIDAQAB";
+
+    $("#ok").click(function () {
+        var URL = $("#url").val();
+        //AES密钥
+        var aesKey = GenNonDuplicateID();
+        //AES加密token
+        var token = aesEncrypt($("#token").val(), aesKey);
+        //AES加密content
+        var content = aesEncrypt($("#content").val(), aesKey);
+        //RSA加密AES密钥
+        aesKey = rsaEncrypt(aesKey);
+        var header = {
+            aesKey: aesKey,
+            token: token
+        };
+        var params = {
+            content: content
+        };
+        ajax("POST", URL, header, params, success, error);
+        function success(d) {
+            $("body").append(d);
+        }
+
+        function error(e) {
+            $("body").append(e);
+        }
+    });
+
+
+    /**
+     * 生成随机数
+     *
+     * @return {string}
+     */
+    function GenNonDuplicateID(randomLength) {
+        return Number(Math.random().toString().substr(3, randomLength) + Date.now()).toString(36)
+    }
+    //    ajax
+    function ajax(type, url, header, params, success, error) {
+        $.ajax({
+            type: type,
+            timeout: 10000,
+            url: url,
+            contentType: 'application/x-www-form-urlencoded',
+            // 设置header
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("aesKey", header.aesKey);
+                xhr.setRequestHeader("token", header.token);
+            },
+            data: $.param(params),
+            success: function (d) {
+                success(d);
+            },
+            error: function (e) {
+                error(e);
+            }
+        })
+    }
+</script>
+</body>
+</html>
