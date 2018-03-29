@@ -9,6 +9,7 @@ $(function () {
 });
 //ok
 $("#ok").click(function () {
+    $("#result").text("");
     //URL
     var URL = $("#url").val();
     var patt = /html:\\\\/;
