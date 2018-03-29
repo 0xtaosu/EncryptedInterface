@@ -6,18 +6,25 @@ $(function () {
     $("#url").val(localStorage.getItem("url"));
     $("#token").val(localStorage.getItem("token"));
     $("#content").val(localStorage.getItem("content"));
+    $("#img").val(localStorage.getItem("img"));
+    $("#imgs").val(localStorage.getItem("imgs"));
 });
 //ok
 $("#ok").click(function () {
     $("#result").text("");
-    //URL
+    //变量
     var URL = $("#url").val();
     var patt = /html:\\\\/;
     var token = $("#token").val();
     var content = $("#content").val();
+    var img = $("#img").val();
+    var imgs = $("#imgs").val();
+
     localStorage.setItem("url", URL);
     localStorage.setItem("token", token);
     localStorage.setItem("content", content);
+    localStorage.setItem("img", img);
+    localStorage.setItem("imgs", imgs);
     //AES密钥
     var aesKey = randomWord(false, 16);
     console.log("aes密钥" + aesKey);
@@ -35,7 +42,9 @@ $("#ok").click(function () {
         token: JSON.parse(token.toString()).ct
     };
     var params = {
-        content: JSON.parse(content.toString()).ct
+        content: JSON.parse(content.toString()).ct,
+        img: img,
+        imgs: imgs
     };
     ajax("POST", URL, header, params, success, error);
 });
@@ -119,7 +128,7 @@ function randomWord(randomFlag, min, max) {
 function ajax(type, url, header, params, success, error) {
     $.ajax({
         type: type,
-        timeout: 10000,
+        timeout: 300000,
         url: url,
         contentType: 'application/x-www-form-urlencoded',
         // 设置header

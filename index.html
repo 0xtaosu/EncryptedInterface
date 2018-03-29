@@ -8,11 +8,13 @@
 <body>
 <form>
     <p>URL</p>
-    <input type="text" id="url" placeholder="输入url"><br>
+    <input type="text" id="url" placeholder="输入url，(需要加上http://)"><br>
     <p>Header</p>
     <input type="text" id="token" placeholder="输入用户token,如果有"><br>
     <p>Body</p>
     <input type="text" id="content" placeholder="输入content,如果有"><br>
+    <input type="text" id="img" placeholder="输入图片的base64字符串,如果有"><br>
+    <input type="text" id="imgs" placeholder="输入图片的base64字符串数组,如果有"><br>
     <input type="button" id="ok" value="POST">
 </form>
 <div id="result"></div>
